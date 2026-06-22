@@ -498,7 +498,7 @@ async function start() {
 
     let admins = queryAll('admins');
     if (admins.length === 0) {
-      const pass = process.env.ADMIN_PASSWORD || 'admin123';
+      const pass = process.env.ADMIN_PASSWORD || 'MBC10101971';
       const hash = await bcrypt.hash(pass, 10);
       insertRow('admins', { username: 'superadmin', password_hash: hash, role: 'superadmin' });
       admins = queryAll('admins');
