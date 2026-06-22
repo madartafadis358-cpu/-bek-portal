@@ -23,6 +23,7 @@ if (!process.env.JWT_SECRET) {
   process.exit(1);
 }
 const JWT_SECRET = process.env.JWT_SECRET;
+const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
 
 const ALLOWED_COLUMNS = ['id', 'created_at', 'titre', 'date', 'name', 'amount_dzd', 'status', 'description', 'quartier', 'categorie', 'votes', 'statut', 'avancement', 'benevoles', 'username', 'role', 'plan_type', 'placement', 'title', 'start_date', 'end_date'];
 
@@ -224,7 +225,7 @@ app.post('/api/business/register', async (req, res) => {
         failure_url: `${req.headers.origin}/annuaire?canceled=true`,
         description: 'Abonnement Premium Partenaire - Bek-Portal',
         locale: 'fr',
-        webhook_endpoint: `${req.headers.origin}/api/chargily/webhook`,
+        webhook_endpoint: `${APP_URL}/api/chargily/webhook`,
         metadata: { type: 'business_premium', business_id: business.id.toString() },
       };
 
@@ -385,7 +386,6 @@ app.post('/api/chargily/ad-checkout', async (req, res) => {
 
     let checkoutUrl = null;
     const clientOrigin = req.headers.origin || 'http://localhost:3000';
-    const serverBase = `${req.protocol}://${req.headers.host || 'localhost:3000'}`;
     try {
       const checkoutPayload = {
         amount: price,
@@ -394,7 +394,7 @@ app.post('/api/chargily/ad-checkout', async (req, res) => {
         failure_url: `${clientOrigin}/admin/ads?canceled=true`,
         description: `Publicité ${placement} - ${title} - Bek-Portal`,
         locale: 'fr',
-        webhook_endpoint: `${serverBase}/api/chargily/webhook`,
+        webhook_endpoint: `${APP_URL}/api/chargily/webhook`,
         metadata: { type: 'ad_campaign', ad_id: ad.id.toString() },
       };
 
