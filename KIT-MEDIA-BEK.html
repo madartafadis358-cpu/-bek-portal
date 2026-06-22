@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kit Média — Portail Citoyen BEK</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Amiri:wght@400;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
+  .container { max-width: 1200px; width: 100%; text-align: center; }
+  h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #d4a843, #f5d77b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { color: #888; margin-bottom: 2rem; font-size: 1rem; }
+  .grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }
+  .card { background: linear-gradient(145deg, #12121a, #1a1a28); border: 1px solid #2a2a3a; border-radius: 16px; padding: 1.5rem; position: relative; overflow: hidden; }
+  .card-label { position: absolute; top: 12px; right: 12px; background: #d4a843; color: #0a0a0f; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; }
+  .label-left { left: 12px; right: auto; }
+  h2 { font-size: 1.2rem; margin-bottom: 1rem; color: #f5d77b; text-align: left; }
+
+  /* === BANNIÈRE FACEBOOK 1200x630 === */
+  .fb-banner { width: 100%; aspect-ratio: 1200/630; background: linear-gradient(135deg, #0d5c2e 0%, #1a8a4a 30%, #0a0a0f 70%); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; position: relative; text-align: center; overflow: hidden; }
+  .fb-banner::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v-2c0-1.1.9-2 2-2h2V20h-4c-3.3 0-6 2.7-6 6v4h-4v4h4v12h4V30h4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); opacity: 0.3; }
+  .fb-banner .logo { font-size: 3.5rem; font-weight: 900; color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,0.5); line-height: 1.1; position: relative; }
+  .fb-banner .logo span { color: #d4a843; }
+  .fb-banner .tagline { font-size: 1.4rem; color: rgba(255,255,255,0.85); margin-top: 0.5rem; position: relative; }
+  .fb-banner .stats { display: flex; gap: 2rem; margin-top: 1.5rem; position: relative; }
+  .fb-banner .stat-item { text-align: center; }
+  .fb-banner .stat-num { font-size: 1.8rem; font-weight: 800; color: #f5d77b; }
+  .fb-banner .stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+  .fb-banner .flag { position: absolute; top: 1rem; left: 1.5rem; font-size: 2rem; }
+  .fb-banner .cta { margin-top: 1.5rem; background: #d4a843; color: #0a0a0f; padding: 0.8rem 2.5rem; border-radius: 50px; font-weight: 700; font-size: 1rem; position: relative; }
+
+  /* === STORY INSTAGRAM 1080x1920 === */
+  .ig-story { width: 100%; aspect-ratio: 1080/1920; max-height: 600px; background: linear-gradient(180deg, #0d5c2e 0%, #0a0a0f 50%, #1a1a28 100%); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; position: relative; text-align: center; overflow: hidden; }
+  .ig-story .emoji-big { font-size: 3.5rem; margin-bottom: 0.5rem; }
+  .ig-story .title { font-size: 2.2rem; font-weight: 800; line-height: 1.2; }
+  .ig-story .title span { color: #d4a843; }
+  .ig-story .desc { font-size: 1rem; color: rgba(255,255,255,0.7); margin: 0.5rem 0; max-width: 80%; }
+  .ig-story .btn-story { background: #d4a843; color: #0a0a0f; padding: 0.7rem 2rem; border-radius: 50px; font-weight: 700; font-size: 0.9rem; margin-top: 0.5rem; }
+  .ig-story .flag-ig { position: absolute; top: 1rem; left: 1rem; font-size: 1.5rem; }
+
+  /* === FLYER A4 (proportions) === */
+  .flyer { width: 100%; aspect-ratio: 210/297; max-height: 750px; background: linear-gradient(135deg, #0a0a0f 0%, #0d3b1e 100%); border-radius: 12px; display: flex; flex-direction: column; padding: 1.8rem; position: relative; overflow: hidden; }
+  .flyer::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 80% 20%, rgba(212,168,67,0.08), transparent 60%); }
+  .flyer .top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .flyer .top h2 { font-size: 1.6rem; font-weight: 900; color: #fff; text-align: left; }
+  .flyer .top h2 span { color: #d4a843; }
+  .flyer .sub { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-top: 0.2rem; position: relative; }
+  .flyer .features { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-top: 0.8rem; position: relative; }
+  .flyer .feature { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.6rem; text-align: left; }
+  .flyer .feature .icon { font-size: 1.1rem; }
+  .flyer .feature .text { font-size: 0.7rem; color: rgba(255,255,255,0.8); margin-top: 0.2rem; font-weight: 400; }
+  .flyer .feature .label { font-size: 0.8rem; font-weight: 700; color: #f5d77b; }
+  .flyer .creator-section { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.8rem; position: relative; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 0.6rem 0.8rem; border: 1px solid rgba(255,255,255,0.06); }
+  .flyer .creator-section img { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #d4a843; object-fit: cover; }
+  .flyer .creator-section .name { font-size: 0.8rem; font-weight: 700; color: #f5d77b; text-align: left; }
+  .flyer .creator-section .role { font-size: 0.65rem; color: rgba(255,255,255,0.4); text-align: left; }
+  .flyer .bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: center; position: relative; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+  .flyer .bottom .url { font-size: 0.7rem; color: #d4a843; font-weight: 600; }
+  .flyer .bottom .created { font-size: 0.55rem; color: rgba(255,255,255,0.3); }
+  .flyer .stats-fly { display: flex; gap: 1.2rem; margin-top: 0.6rem; position: relative; }
+  .flyer .stat-fly-item { text-align: center; }
+  .flyer .stat-fly-num { font-size: 1.1rem; font-weight: 800; color: #f5d77b; }
+  .flyer .stat-fly-label { font-size: 0.6rem; color: rgba(255,255,255,0.5); }
+
+  /* === BANNIÈRE YOUTUBE 1280x720 === */
+  .yt-banner { width: 100%; aspect-ratio: 1280/720; background: linear-gradient(90deg, #0d5c2e 0%, #0a0a0f 50%, #1a1a28 100%); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; position: relative; text-align: center; overflow: hidden; }
+  .yt-banner::after { content: '▶'; position: absolute; right: 2rem; bottom: 1.5rem; font-size: 2.5rem; color: rgba(255,255,255,0.15); }
+  .yt-banner .yt-title { font-size: 2.8rem; font-weight: 900; color: #fff; }
+  .yt-banner .yt-title span { color: #d4a843; }
+  .yt-banner .yt-sub { font-size: 1.2rem; color: rgba(255,255,255,0.6); margin-top: 0.3rem; }
+  .yt-banner .yt-cta { margin-top: 1rem; display: flex; gap: 1rem; align-items: center; }
+  .yt-banner .yt-cta .pill { background: #d4a843; color: #0a0a0f; padding: 0.5rem 1.5rem; border-radius: 50px; font-weight: 700; font-size: 0.9rem; }
+  .yt-banner .yt-cta .pill-outline { border: 2px solid rgba(255,255,255,0.2); padding: 0.5rem 1.5rem; border-radius: 50px; font-size: 0.8rem; color: rgba(255,255,255,0.7); }
+
+  /* === QUADRI DE PUB (4 mini-bannières en grille) === */
+  .quad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  /* === TIKTOK / REEL === */
+  .tt-card { width: 100%; aspect-ratio: 1080/1920; max-height: 500px; background: #000; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; text-align: center; }
+  .tt-card .tt-text { font-size: 2rem; font-weight: 800; line-height: 1.2; padding: 0 1rem; }
+  .tt-card .tt-text .highlight { color: #d4a843; }
+  .tt-card .tt-sub { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-top: 0.5rem; }
+  .tt-card .tt-handle { position: absolute; bottom: 1rem; left: 1rem; font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+  .tt-card .tt-music { position: absolute; bottom: 1rem; right: 1rem; font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+
+  @media (min-width: 768px) { .grid-col-2 { grid-template-columns: 1fr 1fr; } }
+  .mt-2 { margin-top: 1rem; }
+  .text-muted { color: #666; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Kit Média — Portail Citoyen BEK</h1>
+  <p class="subtitle">Visuels prêts à capturer • Formats réseaux sociaux • Flyer A4</p>
+  <p class="text-muted" style="margin-bottom:1.5rem;">🔗 Lien : <code style="color:#d4a843;background:#1a1a28;padding:2px 8px;border-radius:4px;">https://bek-portal.vercel.app</code></p>
+
+  <div class="grid">
+
+    <!-- Facebook Banner -->
+    <div class="card">
+      <span class="card-label">📘 Facebook 1200×630</span>
+      <div class="fb-banner">
+        <span class="flag">🇩🇿</span>
+        <div class="logo">PORTAL CITOYEN<br><span>BORDJ EL KIFFAN</span></div>
+        <div class="tagline">Signalez • Proposez • Agissez</div>
+        <div class="stats">
+          <div class="stat-item"><div class="stat-num">2 140+</div><div class="stat-label">Citoyens</div></div>
+          <div class="stat-item"><div class="stat-num">847</div><div class="stat-label">Signalements</div></div>
+          <div class="stat-item"><div class="stat-num">564</div><div class="stat-label">Problèmes résolus</div></div>
+        </div>
+        <div class="cta">👉 Rejoignez la communauté</div>
+      </div>
+    </div>
+
+    <!-- Instagram Story -->
+    <div class="card">
+      <span class="card-label">📸 Instagram Story 1080×1920</span>
+      <div class="ig-story">
+        <span class="flag-ig">🇩🇿</span>
+        <div class="emoji-big">📍</div>
+        <div class="title">Ton quartier a<br>un <span>problème</span> ?</div>
+        <div class="desc">Signale-le en 15 secondes sur le Portail Citoyen BEK</div>
+        <div class="stats" style="display:flex;gap:1.5rem;margin-top:0.5rem;">
+          <div class="stat-item"><div class="stat-num" style="font-size:1.2rem;">2 140+</div><div class="stat-label">Citoyens</div></div>
+          <div class="stat-item"><div class="stat-num" style="font-size:1.2rem;">564</div><div class="stat-label">Résolus</div></div>
+        </div>
+        <div class="btn-story">🚀 Rejoins-nous</div>
+      </div>
+    </div>
+
+    <!-- YouTube Banner -->
+    <div class="card">
+      <span class="card-label">▶️ YouTube 1280×720</span>
+      <div class="yt-banner">
+        <div class="yt-title">🇩🇿 PORTAL <span>BEK</span></div>
+        <div class="yt-sub">Bordj El Kiffan — Portail Citoyen Participatif</div>
+        <div class="yt-cta">
+          <span class="pill">📢 Signaler</span>
+          <span class="pill">💡 Proposer</span>
+          <span class="pill-outline">🤝 S'abonner</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TikTok / Reel -->
+    <div class="card">
+      <span class="card-label">🎵 TikTok / Reel 1080×1920</span>
+      <div class="tt-card" style="background:linear-gradient(135deg,#0d5c2e,#000);">
+        <div class="tt-text">Marre de voir ça <span class="highlight">tous les jours</span> ?</div>
+        <div class="tt-sub">Signalez en 15s sur BEK</div>
+        <div class="tt-handle">@portailcitoyenbek</div>
+        <div class="tt-music">🎵 Son original</div>
+      </div>
+    </div>
+
+    <!-- Flyer A4 avec photo -->
+    <div class="card">
+      <span class="card-label">📄 Flyer A4</span>
+      <div class="flyer">
+        <div class="top">
+          <div>
+            <h2>🇩🇿 PORTAL <span>BEK</span></h2>
+            <div class="sub">Bordj El Kiffan — Portail Citoyen</div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.3rem;font-size:0.75rem;color:rgba(255,255,255,0.6);font-style:italic;">
+          « Ensemble pour le bien des citoyens et du pays »
+        </div>
+        <div class="features">
+          <div class="feature"><div class="icon">📍</div><div class="label">Signaler</div><div class="text">Anomalies de voirie, éclairage, propreté</div></div>
+          <div class="feature"><div class="icon">💡</div><div class="label">Proposer</div><div class="text">Idées d'amélioration pour la commune</div></div>
+          <div class="feature"><div class="icon">🗳️</div><div class="label">Voter</div><div class="text">Soutenez les meilleures initiatives</div></div>
+          <div class="feature"><div class="icon">🤝</div><div class="label">Participer</div><div class="text">Projets solidaires et bénévolat</div></div>
+        </div>
+        <div class="stats-fly">
+          <div class="stat-fly-item"><div class="stat-fly-num">2 140+</div><div class="stat-fly-label">Citoyens</div></div>
+          <div class="stat-fly-item"><div class="stat-fly-num">847</div><div class="stat-fly-label">Signalements</div></div>
+          <div class="stat-fly-item"><div class="stat-fly-num">564</div><div class="stat-fly-label">Résolus</div></div>
+          <div class="stat-fly-item"><div class="stat-fly-num">312</div><div class="stat-fly-label">Propositions</div></div>
+        </div>
+        <div class="creator-section">
+          <img src="https://bek-portal.vercel.app/admin_mourad.jpg" alt="Créateur" loading="lazy">
+          <div>
+            <div class="name">Brik Chaouche Mourad</div>
+            <div class="role">Créateur & Administrateur du Portail Citoyen BEK</div>
+          </div>
+        </div>
+        <div class="bottom">
+          <span class="url">🔗 https://bek-portal.vercel.app</span>
+          <span class="created">Juin 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini bannières carré -->
+    <div class="quad-grid card" style="padding:1.5rem;">
+      <div style="background:linear-gradient(135deg,#0d5c2e,#0a0a0f);aspect-ratio:1/1;border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0.5rem;">
+        <div style="font-size:2rem;">📍</div>
+        <div style="font-weight:800;font-size:0.9rem;margin-top:0.3rem;">Signaler</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.5);">un problème</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#d4a843,#8a6a20);aspect-ratio:1/1;border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0.5rem;">
+        <div style="font-size:2rem;">💡</div>
+        <div style="font-weight:800;font-size:0.9rem;margin-top:0.3rem;color:#0a0a0f;">Proposer</div>
+        <div style="font-size:0.6rem;color:rgba(0,0,0,0.5);">une idée</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#1a1a28,#2a2a3a);aspect-ratio:1/1;border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0.5rem;">
+        <div style="font-size:2rem;">📊</div>
+        <div style="font-weight:800;font-size:0.9rem;margin-top:0.3rem;">Suivre</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.5);">en temps réel</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#b52a2a,#7a1a1a);aspect-ratio:1/1;border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0.5rem;">
+        <div style="font-size:2rem;">🤝</div>
+        <div style="font-weight:800;font-size:0.9rem;margin-top:0.3rem;">Entraide</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.5);">et bénévolat</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:2rem;padding:1.5rem;background:#12121a;border:1px solid #2a2a3a;border-radius:12px;">
+    <h2 style="text-align:center;border-bottom:1px solid #2a2a3a;padding-bottom:0.5rem;">📋 Checklist publication</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;text-align:left;font-size:0.85rem;color:rgba(255,255,255,0.7);margin-top:0.5rem;">
+      <div>☐ Facebook — Publier la bannière 1200×630</div>
+      <div>☐ Instagram — Publier la story 1080×1920</div>
+      <div>☐ YouTube — Bannière et description vidéo</div>
+      <div>☐ TikTok — Tourner le reel avec le script</div>
+      <div>☐ Flyer — Imprimer et distribuer</div>
+      <div>☐ WhatsApp — Envoyer le lien aux contacts</div>
+      <div>☐ Facebook Ads — Lancer à 3$/jour</div>
+      <div>☐ Mettre le lien dans la bio partout</div>
+    </div>
+  </div>
+
+    <!-- QR Code -->
+    <div class="card" style="display:flex;flex-direction:row;align-items:center;gap:1.5rem;text-align:left;">
+      <span class="card-label label-left">📱 QR Code</span>
+      <img src="https://bek-portal.vercel.app/qr-bek.png" alt="QR Code BEK" style="width:160px;height:160px;border-radius:12px;border:2px solid #d4a843;flex-shrink:0;">
+      <div>
+        <h3 style="font-size:1.1rem;margin-bottom:0.3rem;">Scannez pour accéder au site</h3>
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Placez votre téléphone devant le code QR pour ouvrir le Portail Citoyen BEK</p>
+        <div style="margin-top:0.5rem;font-size:0.75rem;color:#d4a843;">🔗 https://bek-portal.vercel.app</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin:2rem 0;font-size:0.75rem;color:#444;">
+    Portail Citoyen Bordj El Kiffan • Créé par Brik Chaouche Mourad • Juin 2026
+  </div>
+</div>
+</body>
+</html>
