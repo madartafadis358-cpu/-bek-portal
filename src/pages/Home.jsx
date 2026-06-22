@@ -28,9 +28,9 @@ export default function Home() {
       <section className="hero-section">
         <div className="container">
           <div className="hero-content animate-fade-up">
-            <Link to="/guide" className="guide-btn">
+            <a href="/guide" target="_blank" rel="noopener noreferrer" className="guide-btn">
               📖 Guide Utilisateur
-            </Link>
+            </a>
             <div className="hero-badge">
               <span>🇩🇿</span>
               <span>Commune de Bordj El Kiffan — Alger</span>
