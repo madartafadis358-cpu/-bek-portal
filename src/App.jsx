@@ -9,6 +9,7 @@ import Entraide from './pages/Entraide.jsx';
 import Actualites from './pages/Actualites.jsx';
 import APropos from './pages/APropos.jsx';
 import Campagne from './pages/Campagne.jsx';
+import GuideCitoyen from './pages/GuideCitoyen.jsx';
 import Contact from './pages/Contact.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import AdminMembres from './pages/AdminMembres.jsx';
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/apropos" element={<APropos />} />
             <Route path="/campagne" element={<Campagne />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/guide" element={<GuideCitoyen />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/membres" element={<AdminMembres />} />
