@@ -28,6 +28,10 @@ export default function Home() {
       <section className="hero-section">
         <div className="container">
           <div className="hero-content animate-fade-up">
+            <a href="https://github.com/madartafadis358-cpu/-bek-portal/blob/master/GUIDE_CITOYEN.md"
+               className="guide-btn" target="_blank" rel="noopener noreferrer">
+              📖 Guide Utilisateur
+            </a>
             <div className="hero-badge">
               <span>🇩🇿</span>
               <span>Commune de Bordj El Kiffan — Alger</span>

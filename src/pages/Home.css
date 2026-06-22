@@ -14,15 +14,42 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1.25rem;
-  background: rgba(34,139,34,0.1);
-  border: 1px solid rgba(34,139,34,0.25);
+  padding: 0.4rem 1rem;
   border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border);
   font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--clr-green-glow);
+  color: var(--text-300);
+  font-weight: 500;
   margin-bottom: 1.5rem;
+  backdrop-filter: blur(4px);
 }
+
+.guide-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  background: rgba(34,139,34,0.12);
+  border: 1px solid rgba(34,139,34,0.3);
+  font-size: 0.78rem;
+  color: var(--clr-green-glow);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+.guide-btn:hover {
+  background: rgba(34,139,34,0.2);
+  border-color: var(--clr-green-glow);
+  transform: translateY(-1px);
+}
+
+.hero-content { position: relative; }
 .hero-content h1 { margin-bottom: 1.25rem; }
 .hero-desc {
   font-size: 1.1rem;
