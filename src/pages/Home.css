@@ -7,8 +7,9 @@
 .hero-section .container {
   display: grid;
   grid-template-columns: 1fr auto;
-  align-items: center;
+  align-items: start;
   gap: 4rem;
+  padding-top: 2rem;
 }
 .hero-badge {
   display: inline-flex;
@@ -26,30 +27,27 @@
 }
 
 .guide-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
-  padding: 0.35rem 0.8rem;
-  border-radius: var(--radius-full);
+  margin-top: 1.25rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--radius);
   background: rgba(34,139,34,0.12);
-  border: 1px solid rgba(34,139,34,0.3);
-  font-size: 0.78rem;
+  border: 1px solid rgba(34,139,34,0.25);
+  font-size: 0.8rem;
   color: var(--clr-green-glow);
   font-weight: 600;
   text-decoration: none;
   transition: all var(--transition-fast);
-  white-space: nowrap;
 }
 .guide-btn:hover {
   background: rgba(34,139,34,0.2);
   border-color: var(--clr-green-glow);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
-.hero-content { position: relative; }
 .hero-content h1 { margin-bottom: 1.25rem; }
 .hero-desc {
   font-size: 1.1rem;
@@ -79,12 +77,13 @@
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  padding: 2rem 1.5rem;
+  padding: 2rem 1.5rem 1.5rem;
   text-align: center;
   width: 220px;
   flex-shrink: 0;
   backdrop-filter: blur(10px);
   animation: float 5s ease-in-out infinite;
+  margin-top: -1.5rem;
 }
 .hero-admin-photo {
   width: 130px;

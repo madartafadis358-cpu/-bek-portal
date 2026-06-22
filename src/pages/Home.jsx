@@ -28,9 +28,6 @@ export default function Home() {
       <section className="hero-section">
         <div className="container">
           <div className="hero-content animate-fade-up">
-            <a href="/guide" target="_blank" rel="noopener noreferrer" className="guide-btn">
-              📖 Guide Utilisateur
-            </a>
             <div className="hero-badge">
               <span>🇩🇿</span>
               <span>Commune de Bordj El Kiffan — Alger</span>
@@ -63,6 +60,9 @@ export default function Home() {
               <span>Créateur &amp; Super Administrateur</span>
               <div className="verified-badge"><CheckCircle size={12} /> Vérifié</div>
             </div>
+            <a href="/guide" target="_blank" rel="noopener noreferrer" className="guide-btn">
+              📖 Guide Utilisateur
+            </a>
           </div>
         </div>
 
