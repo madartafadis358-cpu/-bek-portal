@@ -98,6 +98,10 @@
   padding: 0.35rem 0.7rem;
   font-size: 0.78rem;
 }
+.navbar-actions .lang-trigger:hover {
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text-100);
+}
 .user-menu {
   position: relative;
   display: flex;

@@ -566,3 +566,14 @@ textarea.form-control { resize: vertical; min-height: 120px; }
   .features-preview { flex-direction: column; align-items: stretch; }
   .amount-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── RTL Support ── */
+[dir="rtl"] .navbar-actions { flex-direction: row-reverse; }
+[dir="rtl"] .navbar-links { padding-right: 0; }
+[dir="rtl"] .hero-content { text-align: right; }
+[dir="rtl"] .hero-desc { margin-left: 0; margin-right: 0; }
+[dir="rtl"] .hero-actions { justify-content: flex-start; flex-direction: row-reverse; }
+[dir="rtl"] .footer-grid { direction: rtl; }
+[dir="rtl"] .footer-col { text-align: right; }
+[dir="rtl"] .module-arrow { flex-direction: row-reverse; justify-content: flex-end; }
+[dir="rtl"] .guide-step:hover { transform: translateX(-4px); }
