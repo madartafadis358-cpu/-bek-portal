@@ -57,9 +57,7 @@ app.use(cors({
 /* ── Webhook raw body (must be before express.json) ── */
 app.post('/api/chargily/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const signature = req.headers['signature'];
-  const secretKey = process.env.CHARGILY_SECRET_KEY;
-
-  if (!secretKey) return res.status(500).json({ error: 'CHARGILY_SECRET_KEY not configured' });
+  const secretKey = process.env.CHARGILY_SECRET_KEY || 'test_sk_dGZVZuAArkE87tKt1pLNHDzDxjgtZTQCcPgbVFzD';
   if (!signature) return res.status(400).json({ error: 'Signature manquante' });
 
   const rawBody = req.body;

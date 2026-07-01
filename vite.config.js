@@ -23,6 +23,19 @@ const manifest = {
 }
 
 export default defineConfig({
+  build: {
+    chunkSizeWarningLimit: 300,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom')) return 'vendor-react';
+          if (id.includes('node_modules/react')) return 'vendor-react';
+          if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) return 'vendor-i18n';
+          if (id.includes('node_modules')) return 'vendor';
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
