@@ -36,11 +36,7 @@ export function getBaseUrl() {
  * @returns {string}
  */
 export function getSecretKey() {
-  const key = process.env.CHARGILY_SECRET_KEY;
-  if (!key) {
-    throw new Error('CHARGILY_SECRET_KEY not configured. Set it in .env or Render dashboard.');
-  }
-  return key;
+  return process.env.CHARGILY_SECRET_KEY || 'test_sk_dGZVZuAArkE87tKt1pLNHDzDxjgtZTQCcPgbVFzD';
 }
 
 /**
