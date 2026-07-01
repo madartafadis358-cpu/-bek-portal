@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Heart, Check } from 'lucide-react';
-import CCPPayment from '../components/payment/CCPPayment';
+import EdahabiaButton from '../components/payment/EdahabiaButton';
 
 const PREDEFINED = [200, 500, 1000, 2000];
 const DZD_TO_EUR = 145.50;
@@ -19,7 +19,7 @@ export default function Soutenir() {
       .then(d => setDonationCount(d.count || 0))
       .catch(() => {});
     if (window.location.search.includes('success=true')) {
-      setIsSuccess(true); /* eslint-disable-line react-hooks/set-state-in-effect */
+      setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 5000);
     }
   }, []);
@@ -82,14 +82,16 @@ export default function Soutenir() {
         </div>
 
         {amountDZD >= 50 && (
-          <div className="ccp-block">
-            <p className="ccp-instruction">
-              Effectuez un virement de <strong>{amountDZD} دج</strong> sur le compte CCP ci-dessous,
-              depuis votre application <strong>Baridimob</strong> ou en bureau de poste.
-            </p>
-            <CCPPayment amountDZD={amountDZD} supporterName={name} message={message} />
-          </div>
+          <p className="conversion-note">
+            Paiement sécurisé par Carte Edahabia (Algérie Poste) — Montant en DZD.
+          </p>
         )}
+
+        <EdahabiaButton
+          amountDZD={amountDZD}
+          supporterName={name}
+          message={message}
+        />
       </div>
     </div>
   );

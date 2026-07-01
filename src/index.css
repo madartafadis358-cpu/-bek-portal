@@ -517,27 +517,7 @@ textarea.form-control { resize: vertical; min-height: 120px; }
 .btn-subscribe:disabled { opacity: 0.6; cursor: not-allowed; }
 .payment-note { text-align: center; font-size: 0.8rem; color: var(--text-400); max-width: 500px; margin: 0 auto; padding: 1rem; background: var(--glass-bg); border-radius: var(--radius-sm); }
 
-/* ── CCP Payment block ── */
-.ccp-payment { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 1.5rem; margin-top: 1rem; }
-.ccp-header { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 700; color: var(--text-200); margin-bottom: 1rem; }
-.ccp-icon { font-size: 1.3rem; }
-.ccp-info { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
-.ccp-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: var(--bg-800); border-radius: var(--radius-sm); }
-.ccp-label { font-size: 0.78rem; color: var(--text-400); }
-.ccp-value { font-size: 0.85rem; font-weight: 600; color: var(--text-100); }
-.ccp-rib { font-family: 'Courier New', monospace; font-size: 0.9rem; letter-spacing: 1px; color: var(--clr-green); }
-.ccp-amount { font-size: 1rem; color: var(--clr-gold); }
-.ccp-copy-btn { display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.7rem; background: var(--glass-border); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-200); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-.ccp-copy-btn:hover { background: var(--clr-green); color: #fff; border-color: var(--clr-green); }
-.ccp-note { font-size: 0.75rem; color: var(--text-500); text-align: center; margin-top: 0.75rem; }
-.ccp-block { margin-top: 1.5rem; }
-.ccp-instruction { text-align: center; font-size: 0.9rem; color: var(--text-300); margin-bottom: 1rem; padding: 0.75rem; background: var(--glass-bg); border-radius: var(--radius-sm); }
-
-/* ── Premium payment section ── */
-.premium-payment-section { max-width: 500px; margin: 2rem auto 0; padding: 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); text-align: center; }
-.premium-payment-section h3 { margin-bottom: 1rem; font-size: 1rem; color: var(--text-200); }
 .btn-subscribe.selected { background: var(--clr-green); }
-.btn-subscribe-large { width: 100%; padding: 1rem; margin-top: 0.5rem; font-size: 1rem; }
 
 /* ── Ad Banners ── */
 .ad-banner { position: relative; }

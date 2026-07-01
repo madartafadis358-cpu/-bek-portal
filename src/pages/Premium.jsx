@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Crown, Check, BarChart3, Bell, FileText } from 'lucide-react';
-import CCPPayment from '../components/payment/CCPPayment';
+import EdahabiaButton from '../components/payment/EdahabiaButton';
 
 const PLANS = [
   { type: 'monthly', label: 'Mensuel', dzd: 800, features: ['Statistiques avancées du quartier', 'Alertes prioritaires', 'Export de rapports PDF', 'Badge Premium'] },
@@ -13,7 +13,7 @@ export default function Premium() {
 
   useEffect(() => {
     if (window.location.search.includes('success=true')) {
-      setIsSuccess(true); /* eslint-disable-line react-hooks/set-state-in-effect */
+      setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 5000);
     }
   }, []);
@@ -56,20 +56,17 @@ export default function Premium() {
             >
               {selectedPlan?.type === plan.type ? 'Sélectionné' : `Choisir ${plan.label}`}
             </button>
+            {selectedPlan?.type === plan.type && (
+              <div style={{ marginTop: '1rem' }}>
+                <EdahabiaButton
+                  amountDZD={plan.dzd}
+                  label={`Payer ${plan.dzd} دج par Carte Edahabia`}
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
-
-      {selectedPlan && (
-        <div className="premium-payment-section">
-          <h3>Abonnement {selectedPlan.label} — {selectedPlan.dzd} دج</h3>
-          <p className="ccp-instruction">
-            Effectuez un virement de <strong>{selectedPlan.dzd} دج</strong> sur le compte CCP ci-dessous,
-            depuis votre application <strong>Baridimob</strong> ou en bureau de poste.
-          </p>
-          <CCPPayment amountDZD={selectedPlan.dzd} />
-        </div>
-      )}
     </div>
   );
 }
