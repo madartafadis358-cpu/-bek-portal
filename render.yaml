@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: bek-portal
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: CHARGILY_SECRET_KEY
+        sync: false
+      - key: CHARGILY_LIVE_MODE
+        value: "false"
+      - key: JWT_SECRET
+        sync: false
+      - key: APP_URL
+        value: https://bek-portal.onrender.com
