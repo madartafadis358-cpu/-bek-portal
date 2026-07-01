@@ -11,6 +11,7 @@ import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
 import { initDb, queryAll, queryById, queryWhere, insertRow, updateRow, updateRowByCheckout, deleteRow, countWhere, queryRaw } from './api/_lib/database.js';
 import { getChargilyBaseUrl, getChargilyHeaders } from './api/_lib/chargily.js';
+import { createCheckout, getCheckout, verifyWebhookSignature, MIN_AMOUNT, MAX_AMOUNT } from './api/services/chargilyClient.js';
 
 dotenv.config();
 dotenv.config({ path: '.env.local', override: true });
@@ -54,31 +55,39 @@ app.use(cors({
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
 }));
 
-/* ── Webhook raw body (must be before express.json) ── */
+/* ── Webhook Chargily (raw body — must be before express.json) ── */
 app.post('/api/chargily/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const signature = req.headers['signature'];
-  const secretKey = process.env.CHARGILY_SECRET_KEY || 'test_sk_dGZVZuAArkE87tKt1pLNHDzDxjgtZTQCcPgbVFzD';
-  if (!signature) return res.status(400).json({ error: 'Signature manquante' });
 
-  const rawBody = req.body;
-  const computed = crypto.createHmac('sha256', secretKey).update(rawBody).digest('hex');
+  if (!signature) {
+    console.warn('[Webhook] Signature manquante');
+    return res.status(400).json({ error: 'Signature manquante' });
+  }
 
+  let isValid = false;
   try {
-    if (!crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(signature))) {
-      return res.status(403).json({ error: 'Signature invalide' });
-    }
-  } catch {
+    isValid = verifyWebhookSignature(req.body, signature);
+  } catch (e) {
+    console.warn('[Webhook] Erreur vérification signature:', e.message);
+  }
+
+  if (!isValid) {
+    console.warn('[Webhook] Signature invalide reçue');
     return res.status(403).json({ error: 'Signature invalide' });
   }
 
   try {
-    const event = JSON.parse(rawBody.toString());
+    const event = JSON.parse(req.body.toString());
     const checkout = event.data;
+    console.log(`[Webhook] Reçu: ${event.type} | checkout=${checkout?.id} | montant=${checkout?.amount}`);
 
     switch (event.type) {
       case 'checkout.paid': {
         const meta = checkout.metadata || {};
+        console.log(`[Webhook] Paiement réussi pour ${meta.type || 'donation'}`);
+
         updateRowByCheckout('donations', checkout.id, { status: 'completed' });
+
         if (meta.type === 'user_premium') {
           updateRowByCheckout('subscriptions', checkout.id, { status: 'active' });
         }
@@ -93,16 +102,25 @@ app.post('/api/chargily/webhook', express.raw({ type: 'application/json' }), asy
         }
         break;
       }
-      case 'checkout.failed':
-      case 'checkout.canceled': {
+      case 'checkout.failed': {
+        console.log(`[Webhook] Paiement échoué: ${checkout?.id}`);
         updateRowByCheckout('donations', checkout.id, { status: 'failed' });
         updateRowByCheckout('subscriptions', checkout.id, { status: 'canceled' });
         break;
       }
+      case 'checkout.canceled': {
+        console.log(`[Webhook] Paiement annulé: ${checkout?.id}`);
+        updateRowByCheckout('donations', checkout.id, { status: 'canceled' });
+        updateRowByCheckout('subscriptions', checkout.id, { status: 'canceled' });
+        break;
+      }
+      default:
+        console.log(`[Webhook] Type ignoré: ${event.type}`);
     }
 
     res.json({ received: true });
   } catch (err) {
+    console.error('[Webhook] Erreur traitement:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -195,6 +213,127 @@ app.get('/api/donations/count', (req, res) => {
     const count = countWhere('donations', { status: 'completed' });
     res.json({ count });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* ── Rate limiter for checkout creation ── */
+const checkoutLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: 'Trop de tentatives. Réessayez dans 15 minutes.' },
+});
+
+/**
+ * POST /api/soutenir/checkout
+ *
+ * Crée un checkout Chargily pour un don de soutien citoyen.
+ * Body: { amountDZD, supporterName?, message? }
+ * Response: { checkoutUrl, checkoutId }
+ */
+app.post('/api/soutenir/checkout', checkoutLimiter, async (req, res) => {
+  try {
+    const { amountDZD, supporterName, message } = req.body;
+
+    /* Validation montant côté serveur ⚠️ (ne jamais faire confiance au client) */
+    const amount = parseInt(amountDZD);
+    if (!amount || isNaN(amount) || amount < MIN_AMOUNT || amount > MAX_AMOUNT) {
+      return res.status(400).json({
+        error: `Le montant doit être compris entre ${MIN_AMOUNT} et ${MAX_AMOUNT.toLocaleString()} DZD`,
+      });
+    }
+
+    const clientOrigin = req.headers.origin || 'https://bek-portal.onrender.com';
+    const description = message
+      ? `Don de soutien - Portail Citoyen Bordj El Kiffan - ${amount} DZD`
+      : `Don de soutien - Portail Citoyen Bordj El Kiffan`;
+
+    /* Création du checkout via Chargily API */
+    const checkout = await createCheckout({
+      amount,
+      success_url: `${clientOrigin}/soutenir?success=true&checkout_id=${Date.now()}`,
+      failure_url: `${clientOrigin}/soutenir?canceled=true`,
+      description,
+      locale: 'fr',
+      metadata: {
+        type: 'donation',
+        supporter_name: supporterName || 'Anonyme',
+        raw_message: message || '',
+      },
+    });
+
+    /* Sauvegarde en base */
+    const donation = insertRow('donations', {
+      amount_dzd: amount,
+      amount_eur: 0,
+      currency: 'dzd',
+      chargily_checkout_id: checkout.id,
+      status: 'pending',
+      supporter_name: supporterName || null,
+      message: message || null,
+    });
+
+    console.log(`[Soutenir] Checkout créé: ${checkout.id} | ${amount} DZD | ${supporterName || 'Anonyme'}`);
+    res.json({ checkoutUrl: checkout.checkout_url, checkoutId: checkout.id });
+  } catch (err) {
+    console.error('[Soutenir] Erreur création checkout:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/soutenir/verifier?checkout_id=xxx
+ *
+ * Vérifie le statut réel d'un checkout auprès de l'API Chargily.
+ * Cela évite de se fier uniquement au paramètre "success=true" dans l'URL
+ * qui peut être falsifié par l'utilisateur.
+ *
+ * Response: { status, amount, supporter_name, created_at }
+ */
+app.get('/api/soutenir/verifier', async (req, res) => {
+  try {
+    const { checkout_id } = req.query;
+    if (!checkout_id) return res.status(400).json({ error: 'checkout_id requis' });
+
+    /* 1. Vérifier via l'API Chargily */
+    let chargilyStatus = null;
+    try {
+      const remoteCheckout = await getCheckout(checkout_id);
+      chargilyStatus = remoteCheckout.status;
+    } catch (e) {
+      console.warn('[Soutenir] API Chargily indisponible pour vérification:', e.message);
+    }
+
+    /* 2. Vérifier dans notre base */
+    const donations = queryWhere('donations', { chargily_checkout_id: checkout_id });
+    const donation = donations.length > 0 ? donations[0] : null;
+
+    if (!donation) {
+      return res.json({ status: 'not_found', verified: false });
+    }
+
+    /* 3. Déterminer le statut final : priorité à l'API Chargily */
+    const finalStatus = chargilyStatus === 'paid' ? 'completed'
+      : chargilyStatus === 'failed' ? 'failed'
+      : chargilyStatus === 'canceled' ? 'canceled'
+      : donation.status;
+
+    /* Si le statut Chargily indique paid et notre base dit pending, on synchronise */
+    if (chargilyStatus === 'paid' && donation.status === 'pending') {
+      updateRowByCheckout('donations', checkout_id, { status: 'completed' });
+    }
+
+    res.json({
+      status: finalStatus,
+      verified: chargilyStatus === 'paid' || donation.status === 'completed',
+      amount_dzd: donation.amount_dzd,
+      supporter_name: donation.supporter_name,
+      currency: donation.currency,
+      created_at: donation.created_at,
+      webhook_verified: chargilyStatus,
+    });
+  } catch (err) {
+    console.error('[Soutenir] Erreur vérification:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

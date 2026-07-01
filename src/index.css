@@ -519,6 +519,19 @@ textarea.form-control { resize: vertical; min-height: 120px; }
 
 .btn-subscribe.selected { background: var(--clr-green); }
 
+/* ── Success / Receipt ── */
+.success-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--clr-green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem; }
+.success-subtitle { font-size: 1rem; color: var(--text-300); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+.success-card { text-align: left; }
+.receipt-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--glass-border); }
+.receipt-row:last-of-type { border-bottom: none; }
+.receipt-label { font-size: 0.85rem; color: var(--text-400); }
+.receipt-value { font-size: 0.95rem; font-weight: 700; color: var(--text-100); }
+.receipt-success { color: var(--clr-green); }
+.receipt-footer { margin-top: 1.25rem; font-size: 0.8rem; color: var(--text-500); text-align: center; font-style: italic; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* ── Ad Banners ── */
 .ad-banner { position: relative; }
 .ad-sponsored { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,0.7); color: var(--text-400); font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 4px; }
