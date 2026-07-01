@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Crown, Check, BarChart3, Bell, FileText, CreditCard, Landmark } from 'lucide-react';
+import { Crown, Check, BarChart3, Bell, FileText } from 'lucide-react';
 import CCPPayment from '../components/payment/CCPPayment';
 
 const PLANS = [
@@ -8,10 +8,8 @@ const PLANS = [
 ];
 
 export default function Premium() {
-  const [loading, setLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('chargily');
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (window.location.search.includes('success=true')) {
@@ -19,24 +17,6 @@ export default function Premium() {
       setTimeout(() => setIsSuccess(false), 5000);
     }
   }, []);
-
-  async function handleSubscribe(planType) {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/chargily/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planType, userId: null }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      window.location.assign(data.checkoutUrl);
-    } catch (err) {
-      alert('Erreur : ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <div className="premium-page">
@@ -71,7 +51,7 @@ export default function Premium() {
               ))}
             </ul>
             <button
-              onClick={() => { setSelectedPlan(plan); setPaymentMethod('chargily'); }}
+              onClick={() => setSelectedPlan(plan)}
               className={`btn-subscribe ${selectedPlan?.type === plan.type ? 'selected' : ''}`}
             >
               {selectedPlan?.type === plan.type ? 'Sélectionné' : `Choisir ${plan.label}`}
@@ -82,39 +62,12 @@ export default function Premium() {
 
       {selectedPlan && (
         <div className="premium-payment-section">
-          <h3>Paiement pour {selectedPlan.label} — {selectedPlan.dzd} دج</h3>
-
-          <div className="payment-method-selector">
-            <button
-              className={`pm-btn ${paymentMethod === 'chargily' ? 'active' : ''}`}
-              onClick={() => setPaymentMethod('chargily')}
-            >
-              <CreditCard size={20} /> Carte bancaire
-            </button>
-            <button
-              className={`pm-btn ${paymentMethod === 'ccp' ? 'active' : ''}`}
-              onClick={() => setPaymentMethod('ccp')}
-            >
-              <Landmark size={20} /> Virement CCP
-            </button>
-          </div>
-
-          {paymentMethod === 'chargily' ? (
-            <>
-              <p className="payment-note">
-                Paiement sécurisé par CIB / Edahabia (Algérie) — Montant en DZD.
-              </p>
-              <button
-                onClick={() => handleSubscribe(selectedPlan.type)}
-                disabled={loading}
-                className="btn-subscribe btn-subscribe-large"
-              >
-                {loading ? 'Redirection...' : `S'abonner ${selectedPlan.label}`}
-              </button>
-            </>
-          ) : (
-            <CCPPayment amountDZD={selectedPlan.dzd} />
-          )}
+          <h3>Abonnement {selectedPlan.label} — {selectedPlan.dzd} دج</h3>
+          <p className="ccp-instruction">
+            Effectuez un virement de <strong>{selectedPlan.dzd} دج</strong> sur le compte CCP ci-dessous,
+            depuis votre application <strong>Baridimob</strong> ou en bureau de poste.
+          </p>
+          <CCPPayment amountDZD={selectedPlan.dzd} />
         </div>
       )}
     </div>

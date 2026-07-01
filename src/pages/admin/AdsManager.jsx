@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { CreditCard, Landmark } from 'lucide-react';
 import { useApp } from '../../context/AppContext.jsx';
 import CCPPayment from '../../components/payment/CCPPayment';
 
@@ -13,8 +12,7 @@ export default function AdsManager() {
   const [ads, setAds] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [form, setForm] = useState({ title: '', image_url: '', link_url: '' });
-  const [paymentMethod, setPaymentMethod] = useState('chargily');
-  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState('plan'); // plan -> form -> ccp
   const [msg, setMsg] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.has('success') ? '✅ Paiement réussi ! Votre annonce est en ligne.' : '';
@@ -30,38 +28,17 @@ export default function AdsManager() {
       .catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function handlePay(e) {
+  function handleSelectPlan(p) {
+    setSelectedPlan(p);
+    setStep('form');
+    setMsg('');
+  }
+
+  function handleSubmitForm(e) {
     e.preventDefault();
     if (!selectedPlan) return setMsg('Sélectionnez un emplacement');
     if (!form.title || !form.image_url) return setMsg('Titre et image requis');
-    setLoading(true);
-    setMsg('');
-    try {
-      const res = await fetch('/api/chargily/ad-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: form.title,
-          image_url: form.image_url,
-          link_url: form.link_url || '',
-          placement: selectedPlan.placement,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        setMsg('Annonce créée ! Le paiement sera disponible une fois la clé API Chargily configurée.');
-        setSelectedPlan(null);
-        setForm({ title: '', image_url: '', link_url: '' });
-        setAds(prev => data.ad ? [data.ad, ...prev] : prev);
-      }
-    } catch (err) {
-      setMsg('Erreur : ' + err.message);
-    } finally {
-      setLoading(false);
-    }
+    setStep('ccp');
   }
 
   async function handleDelete(id) {
@@ -80,7 +57,7 @@ export default function AdsManager() {
         <span className="overline">Faites la différence</span>
         <h2>Publicité sur BEK</h2>
         <div className="divider" />
-        <p>Promouvez votre activité ou votre événement auprès des citoyens de Bordj El Kiffan. Paiement sécurisé par CIB / Edahabia.</p>
+        <p>Promouvez votre activité ou votre événement auprès des citoyens de Bordj El Kiffan.</p>
       </div>
 
       {msg && <div className="alert alert-danger" style={{ textAlign: 'center', marginBottom: '1rem' }}>{msg}</div>}
@@ -92,7 +69,7 @@ export default function AdsManager() {
             key={p.placement}
             className={`card ${selectedPlan?.placement === p.placement ? 'card-selected' : ''}`}
             style={{ cursor: 'pointer', border: selectedPlan?.placement === p.placement ? '2px solid var(--clr-green-glow)' : '1px solid var(--glass-border)', textAlign: 'center', padding: '2rem 1.5rem' }}
-            onClick={() => { setSelectedPlan(p); setMsg(''); }}
+            onClick={() => handleSelectPlan(p)}
           >
             <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--clr-green-glow)' }}>{p.price} <small style={{ fontSize: '0.9rem' }}>DZD</small></div>
             <h3 style={{ margin: '0.75rem 0 0.25rem' }}>{p.label}</h3>
@@ -103,41 +80,47 @@ export default function AdsManager() {
       </div>
 
       {/* Form */}
-      <div className="card" style={{ maxWidth: 560, margin: '0 auto' }}>
-        <h3 style={{ marginBottom: '1rem' }}>{selectedPlan ? `Créez votre annonce (${selectedPlan.label})` : 'Sélectionnez un emplacement'}</h3>
-        <form onSubmit={handlePay}>
-          <div className="form-group">
-            <label>Titre de l'annonce *</label>
-            <input className="form-control" placeholder="Ex: Boutique El Khir" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required />
-          </div>
-          <div className="form-group">
-            <label>URL de l'image *</label>
-            <input className="form-control" placeholder="https://exemple.com/mon-image.jpg" value={form.image_url} onChange={e => setForm({...form, image_url: e.target.value})} required />
-          </div>
-          <div className="form-group">
-            <label>URL du lien (optionnel)</label>
-            <input className="form-control" placeholder="https://exemple.com" value={form.link_url} onChange={e => setForm({...form, link_url: e.target.value})} />
-          </div>
-          {selectedPlan && (
-            <div className="payment-method-selector" style={{ marginTop: '1rem' }}>
-              <button type="button" className={`pm-btn ${paymentMethod === 'chargily' ? 'active' : ''}`} onClick={() => setPaymentMethod('chargily')}>
-                <CreditCard size={18} /> Carte bancaire
-              </button>
-              <button type="button" className={`pm-btn ${paymentMethod === 'ccp' ? 'active' : ''}`} onClick={() => setPaymentMethod('ccp')}>
-                <Landmark size={18} /> Virement CCP
-              </button>
+      {step === 'form' && selectedPlan && (
+        <div className="card" style={{ maxWidth: 560, margin: '0 auto' }}>
+          <h3 style={{ marginBottom: '1rem' }}>Créez votre annonce ({selectedPlan.label})</h3>
+          <form onSubmit={handleSubmitForm}>
+            <div className="form-group">
+              <label>Titre de l'annonce *</label>
+              <input className="form-control" placeholder="Ex: Boutique El Khir" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required />
             </div>
-          )}
-
-          {paymentMethod === 'ccp' && selectedPlan ? (
-            <CCPPayment amountDZD={selectedPlan.price} />
-          ) : (
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading || !selectedPlan}>
-              {loading ? 'Redirection vers le paiement...' : `Payer ${selectedPlan ? selectedPlan.price : ''} DZD et publier`}
+            <div className="form-group">
+              <label>URL de l'image *</label>
+              <input className="form-control" placeholder="https://exemple.com/mon-image.jpg" value={form.image_url} onChange={e => setForm({...form, image_url: e.target.value})} required />
+            </div>
+            <div className="form-group">
+              <label>URL du lien (optionnel)</label>
+              <input className="form-control" placeholder="https://exemple.com" value={form.link_url} onChange={e => setForm({...form, link_url: e.target.value})} />
+            </div>
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
+              Continuer vers le paiement — {selectedPlan.price} DZD
             </button>
-          )}
-        </form>
-      </div>
+            <button type="button" className="btn btn-secondary" style={{ width: '100%', marginTop: '0.5rem' }} onClick={() => setStep('plan')}>
+              Retour
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* CCP Payment */}
+      {step === 'ccp' && selectedPlan && (
+        <div className="card" style={{ maxWidth: 560, margin: '0 auto' }}>
+          <h3 style={{ marginBottom: '1rem' }}>Paiement par CCP — {selectedPlan.price} DZD</h3>
+          <p className="ccp-instruction">
+            Effectuez un virement de <strong>{selectedPlan.price} دج</strong> sur le compte CCP ci-dessous,
+            depuis votre application <strong>Baridimob</strong> ou en bureau de poste.
+            Votre annonce sera activée dès réception du virement.
+          </p>
+          <CCPPayment amountDZD={selectedPlan.price} />
+          <button type="button" className="btn btn-secondary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => setStep('form')}>
+            Retour
+          </button>
+        </div>
+      )}
 
       {/* Active Ads */}
       {ads.length > 0 && (

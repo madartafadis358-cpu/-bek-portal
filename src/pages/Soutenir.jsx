@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, Check, CreditCard, Landmark } from 'lucide-react';
-import PaymentButton from '../components/payment/PaymentButton';
+import { Heart, Check } from 'lucide-react';
 import CCPPayment from '../components/payment/CCPPayment';
 
 const PREDEFINED = [200, 500, 1000, 2000];
@@ -13,7 +12,6 @@ export default function Soutenir() {
   const [message, setMessage] = useState('');
   const [donationCount, setDonationCount] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('chargily');
 
   useEffect(() => {
     fetch('/api/donations/count')
@@ -84,38 +82,13 @@ export default function Soutenir() {
         </div>
 
         {amountDZD >= 50 && (
-          <>
-            <div className="payment-method-selector">
-              <button
-                className={`pm-btn ${paymentMethod === 'chargily' ? 'active' : ''}`}
-                onClick={() => setPaymentMethod('chargily')}
-              >
-                <CreditCard size={20} /> Carte bancaire
-              </button>
-              <button
-                className={`pm-btn ${paymentMethod === 'ccp' ? 'active' : ''}`}
-                onClick={() => setPaymentMethod('ccp')}
-              >
-                <Landmark size={20} /> Virement CCP
-              </button>
-            </div>
-
-            {paymentMethod === 'chargily' ? (
-              <>
-                <p className="conversion-note">
-                  Paiement sécurisé par CIB / Edahabia (Algérie) — Montant en DZD.
-                </p>
-                <PaymentButton
-                  amountDZD={amountDZD}
-                  supporterName={name}
-                  message={message}
-                  className="payment-btn-full"
-                />
-              </>
-            ) : (
-              <CCPPayment amountDZD={amountDZD} supporterName={name} message={message} />
-            )}
-          </>
+          <div className="ccp-block">
+            <p className="ccp-instruction">
+              Effectuez un virement de <strong>{amountDZD} دج</strong> sur le compte CCP ci-dessous,
+              depuis votre application <strong>Baridimob</strong> ou en bureau de poste.
+            </p>
+            <CCPPayment amountDZD={amountDZD} supporterName={name} message={message} />
+          </div>
         )}
       </div>
     </div>
