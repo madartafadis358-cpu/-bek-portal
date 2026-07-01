@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { CreditCard, Landmark } from 'lucide-react';
 import { useApp } from '../../context/AppContext.jsx';
+import CCPPayment from '../../components/payment/CCPPayment';
 
 const PLANS = [
   { placement: 'sidebar', label: 'Sidebar', price: 500, desc: 'Bannière latérale sur toutes les pages', period: '30 jours' },
@@ -11,6 +13,7 @@ export default function AdsManager() {
   const [ads, setAds] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [form, setForm] = useState({ title: '', image_url: '', link_url: '' });
+  const [paymentMethod, setPaymentMethod] = useState('chargily');
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -115,9 +118,24 @@ export default function AdsManager() {
             <label>URL du lien (optionnel)</label>
             <input className="form-control" placeholder="https://exemple.com" value={form.link_url} onChange={e => setForm({...form, link_url: e.target.value})} />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading || !selectedPlan}>
-            {loading ? 'Redirection vers le paiement...' : `Payer ${selectedPlan ? selectedPlan.price : ''} DZD et publier`}
-          </button>
+          {selectedPlan && (
+            <div className="payment-method-selector" style={{ marginTop: '1rem' }}>
+              <button type="button" className={`pm-btn ${paymentMethod === 'chargily' ? 'active' : ''}`} onClick={() => setPaymentMethod('chargily')}>
+                <CreditCard size={18} /> Carte bancaire
+              </button>
+              <button type="button" className={`pm-btn ${paymentMethod === 'ccp' ? 'active' : ''}`} onClick={() => setPaymentMethod('ccp')}>
+                <Landmark size={18} /> Virement CCP
+              </button>
+            </div>
+          )}
+
+          {paymentMethod === 'ccp' && selectedPlan ? (
+            <CCPPayment amountDZD={selectedPlan.price} />
+          ) : (
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading || !selectedPlan}>
+              {loading ? 'Redirection vers le paiement...' : `Payer ${selectedPlan ? selectedPlan.price : ''} DZD et publier`}
+            </button>
+          )}
         </form>
       </div>
 

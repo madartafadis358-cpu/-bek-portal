@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Crown, Check, BarChart3, Bell, FileText } from 'lucide-react';
+import { Crown, Check, BarChart3, Bell, FileText, CreditCard, Landmark } from 'lucide-react';
+import CCPPayment from '../components/payment/CCPPayment';
 
 const PLANS = [
   { type: 'monthly', label: 'Mensuel', dzd: 800, features: ['Statistiques avancées du quartier', 'Alertes prioritaires', 'Export de rapports PDF', 'Badge Premium'] },
@@ -9,6 +10,8 @@ const PLANS = [
 export default function Premium() {
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('chargily');
 
   useEffect(() => {
     if (window.location.search.includes('success=true')) {
@@ -68,19 +71,52 @@ export default function Premium() {
               ))}
             </ul>
             <button
-              onClick={() => handleSubscribe(plan.type)}
-              disabled={loading}
-              className="btn-subscribe"
+              onClick={() => { setSelectedPlan(plan); setPaymentMethod('chargily'); }}
+              className={`btn-subscribe ${selectedPlan?.type === plan.type ? 'selected' : ''}`}
             >
-              {loading ? 'Redirection...' : `S'abonner ${plan.label}`}
+              {selectedPlan?.type === plan.type ? 'Sélectionné' : `Choisir ${plan.label}`}
             </button>
           </div>
         ))}
       </div>
 
-      <p className="payment-note">
-        Paiement sécurisé par CIB / Edahabia (Algérie) — Montant en DZD.
-      </p>
+      {selectedPlan && (
+        <div className="premium-payment-section">
+          <h3>Paiement pour {selectedPlan.label} — {selectedPlan.dzd} دج</h3>
+
+          <div className="payment-method-selector">
+            <button
+              className={`pm-btn ${paymentMethod === 'chargily' ? 'active' : ''}`}
+              onClick={() => setPaymentMethod('chargily')}
+            >
+              <CreditCard size={20} /> Carte bancaire
+            </button>
+            <button
+              className={`pm-btn ${paymentMethod === 'ccp' ? 'active' : ''}`}
+              onClick={() => setPaymentMethod('ccp')}
+            >
+              <Landmark size={20} /> Virement CCP
+            </button>
+          </div>
+
+          {paymentMethod === 'chargily' ? (
+            <>
+              <p className="payment-note">
+                Paiement sécurisé par CIB / Edahabia (Algérie) — Montant en DZD.
+              </p>
+              <button
+                onClick={() => handleSubscribe(selectedPlan.type)}
+                disabled={loading}
+                className="btn-subscribe btn-subscribe-large"
+              >
+                {loading ? 'Redirection...' : `S'abonner ${selectedPlan.label}`}
+              </button>
+            </>
+          ) : (
+            <CCPPayment amountDZD={selectedPlan.dzd} />
+          )}
+        </div>
+      )}
     </div>
   );
 }
