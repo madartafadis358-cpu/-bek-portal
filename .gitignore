@@ -26,4 +26,4 @@ dist-ssr
 .vercel
 .env
 .env.local
-data/
+data/bek.db

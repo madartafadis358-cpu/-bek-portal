@@ -1,0 +1,31 @@
+{
+  "signalements": [
+    { "titre": "Nid de poule sur la route principale", "categorie": "Voirie et routes", "statut": "En cours", "votes": 24, "description": "Grande route endommagée près du marché central.", "quartier": "Cité des fleurs" },
+    { "titre": "Panne d'éclairage rue Ben Youcef", "categorie": "Éclairage public", "statut": "Résolu", "votes": 18, "description": "5 lampadaires éteints depuis 2 semaines.", "quartier": "Centre-ville" },
+    { "titre": "Décharges sauvages sur le boulevard", "categorie": "Propreté et environnement", "statut": "Nouveau", "votes": 31, "description": "Accumulation de déchets non collectés.", "quartier": "Quartier El Bahri" },
+    { "titre": "Absence de transport le week-end", "categorie": "Transport", "statut": "En attente", "votes": 45, "description": "Pas de bus les vendredis matin.", "quartier": "Cité Universitaire" }
+  ],
+  "propositions": [
+    { "titre": "Installer des caméras de surveillance dans les parcs", "categorie": "Sécurité", "votes": 87, "commentaires": 12, "auteur": "Citoyen engagé", "description": "Pour améliorer la sécurité des espaces publics." },
+    { "titre": "Créer une ligne de bus express vers le centre", "categorie": "Transport", "votes": 124, "commentaires": 23, "auteur": "Association BEK", "description": "Réduire la congestion et faciliter les déplacements." },
+    { "titre": "Planter 500 arbres dans les quartiers", "categorie": "Propreté et environnement", "votes": 201, "commentaires": 34, "auteur": "Club Écologie", "description": "Améliorer la qualité de l'air et l'ombre en été." }
+  ],
+  "entraide": [
+    { "type": "Bénévolat", "titre": "Aide aux devoirs pour élèves", "auteur": "Prof. Karim", "contact": "karim@email.com", "description": "Disponible les mercredis après-midi." },
+    { "type": "Expertise professionnelle", "titre": "Conseil juridique gratuit", "auteur": "Me. Fatima", "contact": "fatima@email.com", "description": "Consultations juridiques pour les citoyens." },
+    { "type": "Aide matérielle", "titre": "Dons de vêtements d'hiver", "auteur": "Association Rahma", "contact": "rahma@email.com", "description": "Distribution gratuite le vendredi." }
+  ],
+  "projets": [
+    { "titre": "Réhabilitation du parc municipal", "objectif": "Rénover le parc central pour les familles", "avancement": 65, "benevoles": 12, "statut": "Actif", "date": "2026-04-10", "description": "Rénovation des allées, bancs, aires de jeux." },
+    { "titre": "Bibliothèque communautaire", "objectif": "Ouvrir une bibliothèque de quartier gratuite", "avancement": 40, "benevoles": 8, "statut": "Actif", "date": "2026-05-01", "description": "Collecte de livres et aménagement du local." },
+    { "titre": "Formation numérique pour seniors", "objectif": "Initier 100 seniors à internet", "avancement": 80, "benevoles": 5, "statut": "Actif", "date": "2026-03-15", "description": "Ateliers hebdomadaires gratuits." }
+  ],
+  "admins": [
+    { "username": "djamel.bensadouk", "password_hash": "$2b$10$/Su3aCOv4J/YiXI9Rr/ZV.aexKgHbyVbcnQumM.p342K5JdOFlIfu", "role": "admin" }
+  ],
+  "actualites": [
+    { "titre": "Journée de nettoyage citoyenne — Grand succès !", "categorie": "Événement", "date": "2026-06-05", "image": null, "description": "Plus de 200 volontaires ont participé à la grande journée de nettoyage du littoral de Bordj El Kiffan." },
+    { "titre": "Inauguration du nouveau centre de santé", "categorie": "Réalisation", "date": "2026-05-30", "image": null, "description": "Le nouveau centre de santé de proximité a ouvert ses portes." },
+    { "titre": "Appel aux bénévoles — Fête de quartier", "categorie": "Appel", "date": "2026-06-10", "image": null, "description": "La commune cherche des bénévoles pour l'animation." }
+  ]
+}
