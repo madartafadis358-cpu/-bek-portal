@@ -265,6 +265,7 @@ app.post('/api/soutenir/checkout', checkoutLimiter, async (req, res) => {
       failure_url: `${clientOrigin}/soutenir?canceled=true`,
       description,
       locale: 'fr',
+      webhook_endpoint: `${APP_URL}/api/chargily/webhook`,
       metadata: {
         type: 'donation',
         supporter_name: supporterName || 'Anonyme',
@@ -436,7 +437,7 @@ app.post('/api/chargily/create-checkout', async (req, res) => {
       failure_url: `${req.headers.origin}/soutenir?canceled=true`,
       description: message || `Soutien Bek-Portal - ${amountDZD} دج`,
       locale: 'fr',
-      webhook_endpoint: `${req.headers.origin}/api/chargily/webhook`,
+      webhook_endpoint: `${APP_URL}/api/chargily/webhook`,
       metadata: { type: 'donation', supporter_name: supporterName || 'Anonyme' },
     };
 
@@ -483,7 +484,7 @@ app.post('/api/chargily/create-checkout-session', async (req, res) => {
       failure_url: `${req.headers.origin}/premium?canceled=true`,
       description: `Abonnement ${plan.label} - Bek-Portal`,
       locale: 'fr',
-      webhook_endpoint: `${req.headers.origin}/api/chargily/webhook`,
+      webhook_endpoint: `${APP_URL}/api/chargily/webhook`,
       metadata: { type: 'user_premium', plan_type: planType, user_id: userId || 'anonymous' },
     };
 

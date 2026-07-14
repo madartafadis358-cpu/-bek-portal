@@ -60,9 +60,10 @@ export function getHeaders() {
  * @param {string} params.description — Human-readable description (shown on Chargily page)
  * @param {object} [params.metadata={}] — Custom metadata passed to webhook
  * @param {string} [params.locale='fr'] — Language: 'fr', 'ar', 'en'
+ * @param {string} [params.webhook_endpoint] — Webhook URL for Chargily to call (overrides account default)
  * @returns {Promise<object>} Chargily checkout object (contains .id, .checkout_url, .status)
  */
-export async function createCheckout({ amount, success_url, failure_url, description, metadata = {}, locale = 'fr' }) {
+export async function createCheckout({ amount, success_url, failure_url, description, metadata = {}, locale = 'fr', webhook_endpoint }) {
   if (!amount || amount < MIN_AMOUNT) {
     throw new Error(`Le montant minimum est de ${MIN_AMOUNT} DZD`);
   }
@@ -82,6 +83,7 @@ export async function createCheckout({ amount, success_url, failure_url, descrip
     locale,
     metadata,
   };
+  if (webhook_endpoint) body.webhook_endpoint = webhook_endpoint;
 
   const response = await fetch(`${getBaseUrl()}/checkouts`, {
     method: 'POST',
