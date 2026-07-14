@@ -638,13 +638,17 @@ async function start() {
   try {
     await initDb();
 
-    let admins = queryAll('admins');
-    if (admins.length === 0) {
-      const pass = process.env.ADMIN_PASSWORD || 'MBC10101971';
-      const hash = await bcrypt.hash(pass, 10);
+    const pass = process.env.ADMIN_PASSWORD || 'MBC10101971';
+    const hash = await bcrypt.hash(pass, 10);
+
+    const superAdmin = queryWhere('admins', { username: 'superadmin' })[0];
+    if (!superAdmin) {
       insertRow('admins', { username: 'superadmin', password_hash: hash, role: 'superadmin' });
-      admins = queryAll('admins');
       console.log('[Server] Super admin created');
+    } else {
+      /* Synchroniser le mot de passe à chaque démarrage (pratique pour Render) */
+      updateRow('admins', superAdmin.id, { password_hash: hash });
+      console.log('[Server] Super admin password synchronized');
     }
 
     app.listen(PORT, () => {
