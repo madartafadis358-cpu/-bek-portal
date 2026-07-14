@@ -29,6 +29,7 @@ export default function Navbar() {
   const [regForm, setRegForm] = useState({ nom: '', email: '' });
   const [regMessage, setRegMessage] = useState('');
   const [showLogin, setShowLogin] = useState(false);
+  const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -65,12 +66,13 @@ export default function Navbar() {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: loginPassword }),
+        body: JSON.stringify({ username: loginUsername || undefined, password: loginPassword }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      dispatch({ type: 'LOGIN', payload: { user: { name: data.user.role === 'superadmin' ? 'Super Admin' : 'Admin', role: data.user.role, avatar: '/admin_profile_1780909824483.png' }, token: data.token } });
+      dispatch({ type: 'LOGIN', payload: { user: { name: data.user.username, role: data.user.role, avatar: '/admin_profile_1780909824483.png' }, token: data.token } });
       setShowLogin(false);
+      setLoginUsername('');
       setLoginPassword('');
     } catch (err) {
       setLoginError(err.message);
@@ -217,13 +219,18 @@ export default function Navbar() {
       )}
 
       {showLogin && (
-        <div className="modal-overlay" onClick={() => { setShowLogin(false); setLoginError(''); }}>
+        <div className="modal-overlay" onClick={() => { setShowLogin(false); setLoginUsername(''); setLoginPassword(''); setLoginError(''); }}>
           <div className="modal card" style={{ maxWidth: 400, padding: '2rem' }} onClick={e => e.stopPropagation()}>
             <h3>{t('nav.login_title')}</h3>
             <form onSubmit={handleLoginSubmit} style={{ marginTop: '1rem' }}>
               <div className="form-group">
+                <label>{t('nav.login_username_label') || "Nom d'utilisateur"}</label>
+                <input type="text" className="form-control" placeholder="superadmin" autoFocus
+                  value={loginUsername} onChange={e => setLoginUsername(e.target.value)} />
+              </div>
+              <div className="form-group">
                 <label>{t('nav.login_label')}</label>
-                <input type="password" className="form-control" placeholder={t('nav.login_placeholder')} required autoFocus
+                <input type="password" className="form-control" placeholder={t('nav.login_placeholder')} required
                   value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
               </div>
               {loginError && <div className="alert alert-danger" style={{ fontSize: '0.85rem' }}>{loginError}</div>}
@@ -231,7 +238,7 @@ export default function Navbar() {
                 {t('nav.login_submit')}
               </button>
               <button type="button" className="btn btn-sm btn-secondary" style={{ width: '100%', marginTop: '0.5rem' }}
-                onClick={() => { setShowLogin(false); setLoginError(''); }}>
+                onClick={() => { setShowLogin(false); setLoginUsername(''); setLoginPassword(''); setLoginError(''); }}>
                 {t('nav.login_cancel')}
               </button>
             </form>

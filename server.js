@@ -559,20 +559,25 @@ app.post('/api/chargily/ad-checkout', async (req, res) => {
 
 app.post('/api/admin/login', loginLimiter, async (req, res) => {
   try {
-    const { password } = req.body;
+    const { username, password } = req.body;
     if (!password) return res.status(400).json({ error: 'Mot de passe requis' });
 
     const admins = queryAll('admins');
+
+    /* Premier démarrage : création du superadmin avec le mot de passe ADMIN_PASSWORD */
     if (admins.length === 0) {
-      const hash = await bcrypt.hash(password, 10);
+      const defaultPass = process.env.ADMIN_PASSWORD || 'MBC10101971';
+      const hash = await bcrypt.hash(defaultPass, 10);
       insertRow('admins', { username: 'superadmin', password_hash: hash, role: 'superadmin' });
     }
 
-    const admin = queryWhere('admins', { username: 'superadmin' })[0];
-    if (!admin) return res.status(401).json({ error: 'Compte admin introuvable' });
+    /* Authentification par nom d'utilisateur + mot de passe */
+    const loginName = username || 'superadmin';
+    const admin = queryWhere('admins', { username: loginName })[0];
+    if (!admin) return res.status(401).json({ error: 'Nom d\'utilisateur ou mot de passe incorrect' });
 
     const valid = await bcrypt.compare(password, admin.password_hash);
-    if (!valid) return res.status(401).json({ error: 'Mot de passe incorrect' });
+    if (!valid) return res.status(401).json({ error: 'Nom d\'utilisateur ou mot de passe incorrect' });
 
     const token = jwt.sign({ id: admin.id, username: admin.username, role: admin.role }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: admin.id, username: admin.username, role: admin.role } });
