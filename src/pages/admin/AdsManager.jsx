@@ -17,7 +17,7 @@ export default function AdsManager() {
     return params.has('success') ? '✅ Paiement réussi ! Votre annonce est en ligne.' : '';
   });
   const { state } = useApp();
-  const isAdmin = state.user?.role === 'admin';
+  const isAdmin = state.user?.role === 'admin' || state.user?.role === 'superadmin';
 
   useEffect(() => {
     if (msg) window.history.replaceState({}, '', window.location.pathname);
