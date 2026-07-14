@@ -248,10 +248,20 @@ app.post('/api/soutenir/checkout', checkoutLimiter, async (req, res) => {
       ? `Don de soutien - Portail Citoyen Bordj El Kiffan - ${amount} DZD`
       : `Don de soutien - Portail Citoyen Bordj El Kiffan`;
 
-    /* Création du checkout via Chargily API */
+    /* 1. Créer la donation en base pour obtenir un ID local (ref) */
+    const donation = insertRow('donations', {
+      amount_dzd: amount,
+      amount_eur: 0,
+      currency: 'dzd',
+      status: 'pending',
+      supporter_name: supporterName || null,
+      message: message || null,
+    });
+
+    /* 2. Création du checkout via Chargily API (avec ref = donation ID dans success_url) */
     const checkout = await createCheckout({
       amount,
-      success_url: `${clientOrigin}/soutenir?success=true&checkout_id=${Date.now()}`,
+      success_url: `${clientOrigin}/soutenir?success=true&ref=${donation.id}`,
       failure_url: `${clientOrigin}/soutenir?canceled=true`,
       description,
       locale: 'fr',
@@ -262,18 +272,10 @@ app.post('/api/soutenir/checkout', checkoutLimiter, async (req, res) => {
       },
     });
 
-    /* Sauvegarde en base */
-    const donation = insertRow('donations', {
-      amount_dzd: amount,
-      amount_eur: 0,
-      currency: 'dzd',
-      chargily_checkout_id: checkout.id,
-      status: 'pending',
-      supporter_name: supporterName || null,
-      message: message || null,
-    });
+    /* 3. Mise à jour de la donation avec le vrai checkout_id Chargily */
+    updateRow('donations', donation.id, { chargily_checkout_id: checkout.id });
 
-    console.log(`[Soutenir] Checkout créé: ${checkout.id} | ${amount} DZD | ${supporterName || 'Anonyme'}`);
+    console.log(`[Soutenir] Checkout créé: ${checkout.id} | ${amount} DZD | ref=${donation.id} | ${supporterName || 'Anonyme'}`);
     res.json({ checkoutUrl: checkout.checkout_url, checkoutId: checkout.id });
   } catch (err) {
     console.error('[Soutenir] Erreur création checkout:', err.message);
@@ -282,37 +284,39 @@ app.post('/api/soutenir/checkout', checkoutLimiter, async (req, res) => {
 });
 
 /**
- * GET /api/soutenir/verifier?checkout_id=xxx
+ * GET /api/soutenir/verifier?ref=xxx
  *
  * Vérifie le statut réel d'un checkout auprès de l'API Chargily.
- * Cela évite de se fier uniquement au paramètre "success=true" dans l'URL
- * qui peut être falsifié par l'utilisateur.
+ * Le paramètre `ref` est l'ID local de la donation (évite les falsifications).
  *
  * Response: { status, amount, supporter_name, created_at }
  */
 app.get('/api/soutenir/verifier', async (req, res) => {
   try {
-    const { checkout_id } = req.query;
-    if (!checkout_id) return res.status(400).json({ error: 'checkout_id requis' });
+    const { ref } = req.query;
+    if (!ref) return res.status(400).json({ error: 'ref requis' });
+
+    const donationId = parseInt(ref);
+    if (isNaN(donationId)) return res.status(400).json({ error: 'ref invalide' });
+
+    const donation = queryById('donations', donationId);
+    if (!donation) {
+      return res.json({ status: 'not_found', verified: false });
+    }
+
+    /* Récupérer le vrai checkout_id Chargily depuis la base */
+    const checkoutId = donation.chargily_checkout_id;
 
     /* 1. Vérifier via l'API Chargily */
     let chargilyStatus = null;
     try {
-      const remoteCheckout = await getCheckout(checkout_id);
+      const remoteCheckout = await getCheckout(checkoutId);
       chargilyStatus = remoteCheckout.status;
     } catch (e) {
       console.warn('[Soutenir] API Chargily indisponible pour vérification:', e.message);
     }
 
-    /* 2. Vérifier dans notre base */
-    const donations = queryWhere('donations', { chargily_checkout_id: checkout_id });
-    const donation = donations.length > 0 ? donations[0] : null;
-
-    if (!donation) {
-      return res.json({ status: 'not_found', verified: false });
-    }
-
-    /* 3. Déterminer le statut final : priorité à l'API Chargily */
+    /* 2. Déterminer le statut final : priorité à l'API Chargily */
     const finalStatus = chargilyStatus === 'paid' ? 'completed'
       : chargilyStatus === 'failed' ? 'failed'
       : chargilyStatus === 'canceled' ? 'canceled'
@@ -320,7 +324,7 @@ app.get('/api/soutenir/verifier', async (req, res) => {
 
     /* Si le statut Chargily indique paid et notre base dit pending, on synchronise */
     if (chargilyStatus === 'paid' && donation.status === 'pending') {
-      updateRowByCheckout('donations', checkout_id, { status: 'completed' });
+      updateRow('donations', donation.id, { status: 'completed' });
     }
 
     res.json({

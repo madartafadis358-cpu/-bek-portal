@@ -27,17 +27,17 @@ export default function Soutenir() {
     /* Vérification côté serveur si retour de paiement */
     const params = new URLSearchParams(window.location.search);
     const success = params.get('success');
-    const checkoutId = params.get('checkout_id');
+    const ref = params.get('ref');
 
-    if (success === 'true' && checkoutId) {
-      verifyPayment(checkoutId);
+    if (success === 'true' && ref) {
+      verifyPayment(ref);
     }
   }, []);
 
-  async function verifyPayment(checkoutId) {
+  async function verifyPayment(ref) {
     setVerifying(true);
     try {
-      const res = await fetch(`/api/soutenir/verifier?checkout_id=${encodeURIComponent(checkoutId)}`);
+      const res = await fetch(`/api/soutenir/verifier?ref=${encodeURIComponent(ref)}`);
       const data = await res.json();
       setPaymentResult(data);
 
